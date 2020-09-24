@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<sdf version="1.7">
+<sdf version="1.4">
   <model name="test_model_with_frames">
     <frame name="F1">
       <pose>0 0 0 1.570796 0 0</pose>

@@ -570,6 +570,16 @@ void prepareForDirectComparison(sdf::ElementPtr _worldElem)
   }
 }
 
+// Throws an exception if there are any errors present in the `errors` list.
+void ThrowAnyErrors(const sdf::Errors& errors) {
+  if (!errors.empty()) {
+    std::ostringstream os;
+    for (const auto& e : errors)
+      os << "\nError: " + e.Message();
+    throw std::runtime_error(os.str());
+  }
+}
+
 //////////////////////////////////////////////////
 // Test parsing models with child models containg frames nested via <include>
 // Compare parsed SDF with expected string
@@ -582,7 +592,7 @@ TEST(NestedModel, NestedModelWithFramesDirectComparison)
   const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
 
   std::ostringstream stream;
-  std::string version = "1.7";
+  std::string version = "1.4";
   stream
     << "<sdf version='" << version << "'>"
     << "<world name='default'>"
@@ -599,22 +609,29 @@ TEST(NestedModel, NestedModelWithFramesDirectComparison)
   sdf::SDFPtr sdfParsed(new sdf::SDF());
   sdf::init(sdfParsed);
   sdf::Errors errors;
+  // ASSERT_TRUE(
+  //     sdf::readStringWithoutConversion(stream.str(), sdfParsed, errors));
   ASSERT_TRUE(
-      sdf::readStringWithoutConversion(stream.str(), sdfParsed, errors));
+      sdf::readString(stream.str(), sdfParsed, errors));
 
-  auto worldElem = sdfParsed->Root()->GetElement("world");
-  prepareForDirectComparison(worldElem);
+  std::cerr << sdfParsed->ToString();
 
-  // Compare with expected output
-  const std::string expectedSdfPath =
-      std::string(PROJECT_SOURCE_PATH) +
-      "/test/integration/nested_model_with_frames_expected.sdf";
-  std::fstream fs;
-  fs.open(expectedSdfPath);
-  EXPECT_TRUE(fs.is_open());
-  std::stringstream expected;
-  fs >> expected.rdbuf();
-  EXPECT_EQ(expected.str(), sdfParsed->ToString());
+  sdf::Root root;
+  ThrowAnyErrors(root.Load(sdfParsed));
+
+  // auto worldElem = sdfParsed->Root()->GetElement("world");
+  // prepareForDirectComparison(worldElem);
+
+  // // Compare with expected output
+  // const std::string expectedSdfPath =
+  //     std::string(PROJECT_SOURCE_PATH) +
+  //     "/test/integration/nested_model_with_frames_expected.sdf";
+  // std::fstream fs;
+  // fs.open(expectedSdfPath);
+  // EXPECT_TRUE(fs.is_open());
+  // std::stringstream expected;
+  // fs >> expected.rdbuf();
+  // EXPECT_EQ(expected.str(), sdfParsed->ToString());
 }
 
 //////////////////////////////////////////////////
