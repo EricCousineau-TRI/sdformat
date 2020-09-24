@@ -619,6 +619,9 @@ TEST(NestedModel, NestedModelWithFramesDirectComparison)
   sdf::Root root;
   ThrowAnyErrors(root.Load(sdfParsed));
 
+  std::cerr << "---\n";
+  std::cerr << root.Element()->ToString("");
+
   // auto worldElem = sdfParsed->Root()->GetElement("world");
   // prepareForDirectComparison(worldElem);
 
