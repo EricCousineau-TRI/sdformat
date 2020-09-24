@@ -589,7 +589,7 @@ TEST(NestedModel, NestedModelWithFramesDirectComparison)
   const std::string modelPath = std::string(PROJECT_SOURCE_PATH)
       + "/test/integration/model/" + name;
 
-  const ignition::math::Pose3d model1Pose(10, 0, 0, 0, 0, IGN_PI/2);
+  const ignition::math::Pose3d model1Pose(1, 0, 1, 0, 0, 0);
 
   std::ostringstream stream;
   std::string version = "1.4";
@@ -599,7 +599,7 @@ TEST(NestedModel, NestedModelWithFramesDirectComparison)
     << "  <model name='ParentModel'>"
     << "    <include>"
     << "      <uri>" + modelPath + "</uri>"
-    << "      <name>M1</name>"
+    << "      <name>ChildModel</name>"
     << "      <pose>" << model1Pose << "</pose>"
     << "    </include>"
     << "  </model>"
